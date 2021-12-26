@@ -1,6 +1,6 @@
 using System;
+using System.Net;
 using System.Text;
-using System.Threading.Tasks;
 using FileLogger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,7 +48,7 @@ namespace AspNetCoreSample
 
 			app.Run(async ctx =>
 			{
-				ctx.Response.StatusCode = 200;
+				ctx.Response.StatusCode = (int)HttpStatusCode.OK;
 
 				await ctx.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("hello, world")).ConfigureAwait(false);
 			});

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
 using FileLogger;
 using Microsoft.AspNetCore.Hosting;
@@ -14,14 +15,32 @@ namespace AspNetCoreSample
 	public class Program
 	{
 		private static readonly IFileLogSink sink = new FileLogSink();
+		private static readonly CancellationTokenSource cts = new CancellationTokenSource();
+
+		public Program()
+		{
+			Console.CancelKeyPress += (s, e) =>
+			{
+				Console.WriteLine("ctrl-c pressed, exiting");
+
+				cts.Cancel();
+			};
+		}
 
 		public static async Task<int> Main(string[] args)
 		{
 			IHost host = BuildHost();
 
-			await host.RunAsync();
+			try
+			{
+				await host.RunAsync(cts.Token);
+			}
+			finally
+			{
+				await sink.DisposeAsync();
 
-			await sink.DisposeAsync();
+				cts.Dispose();
+			}
 
 			return 0;
 		}
@@ -80,9 +99,9 @@ namespace AspNetCoreSample
 		{
 			webHostBuilder
 				.UseContentRoot(Directory.GetCurrentDirectory())
-				.UseKestrel(kestrelOptions =>
+				.UseKestrel((ctx, kestrelOptions) =>
 				{
-					kestrelOptions.ListenLocalhost(5000);
+					kestrelOptions.Configure(ctx.Configuration.GetSection("Kestrel"));
 				})
 				.UseStartup<Startup>();
 		}
