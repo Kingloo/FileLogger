@@ -13,7 +13,7 @@ namespace NetCoreSample
 
 		public void DoStuff(string message)
 		{
-			logger.LogDebug(message);
+			logger.LogInformation(message);
 		}
 	}
 }
