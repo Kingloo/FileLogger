@@ -8,6 +8,7 @@ namespace FileLogger
 	{
 		private readonly IOptions<FileLoggerOptions> options;
 		private readonly IFileLogSink sink;
+
 		private readonly ConcurrentDictionary<string, FileLogger> loggers = new ConcurrentDictionary<string, FileLogger>();
 
 		public FileLoggerProvider(IOptions<FileLoggerOptions> options, IFileLogSink sink)
