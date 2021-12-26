@@ -29,7 +29,7 @@ namespace NetCoreSample
 
 					logging.AddFileLogger(options =>
 					{
-						options.Path = @".\NetCoreSample\test.txt";
+						options.Path = @".\test.txt";
 					});
 				})
 				.AddTransient<MyService>()

@@ -1,0 +1,59 @@
+using System;
+using System.Text;
+using System.Threading.Tasks;
+using FileLogger;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
+
+namespace AspNetCoreSample
+{
+	public class Startup
+	{
+		public IConfiguration Configuration { get; }
+
+		public Startup(IConfiguration configuration)
+		{
+			Configuration = configuration;
+		}
+
+		public void ConfigureServices(IServiceCollection services)
+		{
+			services.AddRouting();
+
+			services.AddTransient<MyService>();
+		}
+
+		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+		{
+			var sink = serviceProvider.GetRequiredService<IFileLogSink>();
+			var fileLoggerOptions = serviceProvider.GetRequiredService<IOptions<FileLoggerOptions>>().Value;
+
+			sink.Start(fileLoggerOptions);
+
+			var logger = loggerFactory.CreateLogger<Startup>();
+
+			logger.LogInformation("startup started");
+
+			if (env.IsDevelopment())
+			{
+				app.UseDeveloperExceptionPage();
+			}
+
+			app.UseRouting();
+
+			app.Run(async ctx =>
+			{
+				ctx.Response.StatusCode = 200;
+
+				await ctx.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("hello, world")).ConfigureAwait(false);
+			});
+
+			logger.LogInformation("startup finished");
+		}
+	}
+}
