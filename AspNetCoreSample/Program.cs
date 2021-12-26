@@ -29,11 +29,15 @@ namespace AspNetCoreSample
 
 		public static async Task<int> Main(string[] args)
 		{
+			bool didRunCleanly = false;
+
 			IHost host = BuildHost();
 
 			try
 			{
 				await host.RunAsync(cts.Token);
+
+				didRunCleanly = true;
 			}
 			finally
 			{
@@ -42,7 +46,7 @@ namespace AspNetCoreSample
 				cts.Dispose();
 			}
 
-			return 0;
+			return didRunCleanly ? 0 : -1;
 		}
 
 		private static IHost BuildHost()
@@ -78,8 +82,8 @@ namespace AspNetCoreSample
 			loggingBuilder.AddSimpleConsole(simpleConsoleOptions =>
 			{
 				simpleConsoleOptions.ColorBehavior = LoggerColorBehavior.Enabled;
-				simpleConsoleOptions.TimestampFormat = ctx.Configuration["FileLogger.TimestampFormat"];
 				simpleConsoleOptions.SingleLine = true;
+				simpleConsoleOptions.TimestampFormat = ctx.Configuration["FileLogger.TimestampFormat"];
 			});
 
 			loggingBuilder.AddFileLogger(fileLoggerOptions =>
