@@ -28,7 +28,11 @@ namespace AspNetCoreSample
 			services.AddTransient<MyService>();
 		}
 
-		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, ILoggerFactory loggerFactory, IServiceProvider serviceProvider)
+		public void Configure(
+			IApplicationBuilder app,
+			IWebHostEnvironment env,
+			ILoggerFactory loggerFactory,
+			IServiceProvider serviceProvider)
 		{
 			var sink = serviceProvider.GetRequiredService<IFileLogSink>();
 			var fileLoggerOptions = serviceProvider.GetRequiredService<IOptions<FileLoggerOptions>>().Value;
