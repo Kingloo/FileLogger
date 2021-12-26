@@ -1,9 +1,0 @@
-[26/12/2021 08:39:59 +01:00] info: FileLogger.Program started
-[26/12/2021 08:39:59 +01:00] info: FileLogger.Program information
-[26/12/2021 08:39:59 +01:00] warn: FileLogger.Program warning
-[26/12/2021 08:39:59 +01:00] fail: FileLogger.Program error
-[26/12/2021 08:39:59 +01:00] crit: FileLogger.Program critical
-[26/12/2021 08:40:00 +01:00] crit: FileLogger.Program i am a critical message from program logger
-[26/12/2021 08:40:00 +01:00] sink: FileLogger.Sink timer drained 6 messages (tick 1000 ms)
-[26/12/2021 08:40:00 +01:00] info: FileLogger.Program ended
-[26/12/2021 08:40:00 +01:00] sink: FileLogger.Sink disposed drained 1 message
