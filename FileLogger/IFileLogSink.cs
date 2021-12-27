@@ -8,7 +8,7 @@ namespace FileLogger
 		FileLoggerOptions Options { get; }
 
 		void Start(FileLoggerOptions options);
-		void Pour(LogLevel logLevel, string message);
+		void Pour(string message);
 		void Stop();
 	}
 }

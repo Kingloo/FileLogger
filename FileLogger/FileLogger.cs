@@ -43,7 +43,7 @@ namespace FileLogger
 			sb.Append(" ");
 			sb.Append(formatter(state, exception));
 
-			sink.Pour(logLevel, sb.ToString());
+			sink.Pour(sb.ToString());
 		}
 
 		private static string GetShortName(LogLevel logLevel)

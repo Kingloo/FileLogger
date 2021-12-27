@@ -5,7 +5,6 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
-using Microsoft.Extensions.Logging;
 
 namespace FileLogger
 {
@@ -41,7 +40,7 @@ namespace FileLogger
 			await DrainQueueAndWriteAsync().ConfigureAwait(false);
 		}
 
-		public void Pour(LogLevel logLevel, string message)
+		public void Pour(string message)
 		{
 			message = String.IsNullOrWhiteSpace(message) ? "empty message" : message;
 
