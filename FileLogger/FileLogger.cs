@@ -13,6 +13,8 @@ namespace FileLogger
 
 		public FileLogger(string categoryName, IOptions<FileLoggerOptions> options, IFileLoggerSink sink)
 		{
+			FileLoggerOptions.Validate(options.Value);
+
 			this.categoryName = categoryName;
 			this.options = options.Value;
 			this.sink = sink;
