@@ -137,13 +137,6 @@ namespace FileLogger
 
 		private async ValueTask WriteToFileAsync(string message)
 		{
-			if (!File.Exists(_options.Path))
-			{
-				await Console.Error.WriteLineAsync($"file not found: {Options.Path}").ConfigureAwait(false);
-
-				return;
-			}
-
 			FileStream? fsAsync = null;
 
 			try
