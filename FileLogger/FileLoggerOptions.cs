@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using Microsoft.Extensions.Logging;
 
 namespace FileLogger
@@ -15,5 +16,18 @@ namespace FileLogger
 		public int DrainCount { get; set; } = 10;
 
 		public FileLoggerOptions() { }
+
+		public static void Validate(FileLoggerOptions options)
+		{
+			if (String.IsNullOrWhiteSpace(options.Path))
+			{
+				throw new ArgumentNullException(nameof(options.Path), "log file path was null or whitespace");
+			}
+
+			if (!File.Exists(options.Path))
+			{
+				throw new FileNotFoundException("file not found", options.Path);
+			}
+		}
 	}
 }
