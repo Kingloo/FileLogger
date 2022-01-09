@@ -12,7 +12,7 @@ namespace NetCoreSample
 	{
 		public static async Task<int> Main(string[] args)
 		{
-			await using IFileLogSink sink = new FileLogSink();
+			await using IFileLoggerSink sink = new FileLoggerSink();
 
 			IServiceProvider serviceProvider = new ServiceCollection()
 				.AddSingleton(sink)
@@ -37,7 +37,7 @@ namespace NetCoreSample
 
 			FileLoggerOptions fileLoggerOptions = serviceProvider.GetRequiredService<IOptions<FileLoggerOptions>>().Value;
 
-			IFileLogSink fileLogSink = serviceProvider.GetRequiredService<IFileLogSink>();
+			IFileLoggerSink fileLogSink = serviceProvider.GetRequiredService<IFileLoggerSink>();
 
 			fileLogSink.Start(fileLoggerOptions);
 

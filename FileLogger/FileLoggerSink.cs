@@ -8,7 +8,7 @@ using System.Timers;
 
 namespace FileLogger
 {
-	public class FileLogSink : IFileLogSink
+	public class FileLoggerSink : IFileLoggerSink
 	{
 		private readonly ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
 		private Timer? queueTimer;
@@ -16,7 +16,7 @@ namespace FileLogger
 		private FileLoggerOptions _options = new FileLoggerOptions();
 		public FileLoggerOptions Options { get => _options; }
 
-		public FileLogSink() { }
+		public FileLoggerSink() { }
 
 		public void Start(FileLoggerOptions options)
 		{
@@ -51,6 +51,8 @@ namespace FileLogger
 		{
 			StopDrainTimer();
 		}
+
+		public ValueTask DrainAsync() => DrainQueueAndWriteAsync();
 
 		private void StopDrainTimer()
 		{

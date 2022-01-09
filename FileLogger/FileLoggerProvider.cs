@@ -7,11 +7,11 @@ namespace FileLogger
 	public sealed class FileLoggerProvider : ILoggerProvider
 	{
 		private readonly IOptions<FileLoggerOptions> options;
-		private readonly IFileLogSink sink;
+		private readonly IFileLoggerSink sink;
 
 		private readonly ConcurrentDictionary<string, FileLogger> loggers = new ConcurrentDictionary<string, FileLogger>();
 
-		public FileLoggerProvider(IOptions<FileLoggerOptions> options, IFileLogSink sink)
+		public FileLoggerProvider(IOptions<FileLoggerOptions> options, IFileLoggerSink sink)
 		{
 			this.options = options;
 			this.sink = sink;

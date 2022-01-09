@@ -1,14 +1,15 @@
 using System;
-using Microsoft.Extensions.Logging;
+using System.Threading.Tasks;
 
 namespace FileLogger
 {
-	public interface IFileLogSink : IAsyncDisposable
+	public interface IFileLoggerSink : IAsyncDisposable
 	{
 		FileLoggerOptions Options { get; }
 
 		void Start(FileLoggerOptions options);
 		void Pour(string message);
+		ValueTask DrainAsync();
 		void Stop();
 	}
 }

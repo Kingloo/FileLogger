@@ -14,7 +14,7 @@ namespace AspNetCoreSample
 {
 	public class Program
 	{
-		private static readonly IFileLogSink sink = new FileLogSink();
+		private static readonly IFileLoggerSink sink = new FileLoggerSink();
 		private static readonly CancellationTokenSource cts = new CancellationTokenSource();
 
 		public Program()

@@ -9,9 +9,9 @@ namespace FileLogger
 	{
 		private readonly string categoryName;
 		private readonly FileLoggerOptions options;
-		private readonly IFileLogSink sink;
+		private readonly IFileLoggerSink sink;
 
-		public FileLogger(string categoryName, IOptions<FileLoggerOptions> options, IFileLogSink sink)
+		public FileLogger(string categoryName, IOptions<FileLoggerOptions> options, IFileLoggerSink sink)
 		{
 			this.categoryName = categoryName;
 			this.options = options.Value;
