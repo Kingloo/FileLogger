@@ -10,6 +10,7 @@
 		<RepositoryUrl>https://github.com/Kingloo/FileLogger/</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Tags>file logger logging</Tags>
+		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
 	</PropertyGroup>
 
 	<ItemGroup>
