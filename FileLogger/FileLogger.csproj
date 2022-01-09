@@ -2,12 +2,6 @@
 
 	<PropertyGroup>
 		<OutputType>library</OutputType>
-		<TargetFramework>net6.0</TargetFramework>
-		<Nullable>enable</Nullable>
-		<LangVersion>10.0</LangVersion>
-		<ImplicitUsings>disable</ImplicitUsings>
-		<EnableNETAnalyzers>true</EnableNETAnalyzers>
-		<AnalysisLevel>latest</AnalysisLevel>
 	</PropertyGroup>
 
 	<ItemGroup>
