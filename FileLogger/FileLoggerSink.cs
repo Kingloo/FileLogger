@@ -29,7 +29,7 @@ namespace FileLogger
 		{
 			if (queueTimer is null)
 			{
-				queueTimer = new Timer(_options.DrainInterval.TotalMilliseconds);
+				queueTimer = new Timer(_options.DrainIntervalMs);
 				queueTimer.Elapsed += QueueTimer_Elapsed;
 				queueTimer.Start();
 			}

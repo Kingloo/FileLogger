@@ -94,7 +94,7 @@ namespace AspNetCoreSample
 				fileLoggerOptions.LogLevel = Enum.Parse<LogLevel>(fileLoggerOptionsConfigurationSection["LogLevel"]);
 				fileLoggerOptions.TimestampFormat = fileLoggerOptionsConfigurationSection["TimestampFormat"];
 				fileLoggerOptions.UseUtcTimestamp = bool.Parse(fileLoggerOptionsConfigurationSection["UseUtcTimestamp"]);
-				fileLoggerOptions.DrainInterval = TimeSpan.FromMilliseconds(double.Parse(fileLoggerOptionsConfigurationSection["DrainInterval"]));
+				fileLoggerOptions.DrainIntervalMs = Int32.Parse(fileLoggerOptionsConfigurationSection["DrainIntervalMs"]);
 				fileLoggerOptions.DrainCount = Int32.Parse(fileLoggerOptionsConfigurationSection["DrainCount"]);
 			});
 		}
