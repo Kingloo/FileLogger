@@ -14,7 +14,7 @@ namespace FileLogger
 				options.Path = configurationSection["Path"];
 				options.LogLevel = Enum.Parse<LogLevel>(configurationSection["LogLevel"]);
 				options.TimestampFormat = configurationSection["TimestampFormat"];
-				options.UseUtcTimestamp = bool.Parse(configurationSection["UseUtcTimestampFormat"]);
+				options.UseUtcTimestamp = bool.Parse(configurationSection["UseUtcTimestamp"]);
 				options.DrainIntervalMs = Int32.Parse(configurationSection["DrainIntervalMs"]);
 				options.DrainCount = Int32.Parse(configurationSection["DrainCount"]);
 			});
