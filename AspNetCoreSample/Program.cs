@@ -86,17 +86,7 @@ namespace AspNetCoreSample
 				simpleConsoleOptions.TimestampFormat = ctx.Configuration["FileLogger.TimestampFormat"];
 			});
 
-			loggingBuilder.AddFileLogger(fileLoggerOptions =>
-			{
-				var fileLoggerOptionsConfigurationSection = ctx.Configuration.GetSection("FileLoggerOptions");
-
-				fileLoggerOptions.Path = fileLoggerOptionsConfigurationSection["Path"];
-				fileLoggerOptions.LogLevel = Enum.Parse<LogLevel>(fileLoggerOptionsConfigurationSection["LogLevel"]);
-				fileLoggerOptions.TimestampFormat = fileLoggerOptionsConfigurationSection["TimestampFormat"];
-				fileLoggerOptions.UseUtcTimestamp = bool.Parse(fileLoggerOptionsConfigurationSection["UseUtcTimestamp"]);
-				fileLoggerOptions.DrainIntervalMs = Int32.Parse(fileLoggerOptionsConfigurationSection["DrainIntervalMs"]);
-				fileLoggerOptions.DrainCount = Int32.Parse(fileLoggerOptionsConfigurationSection["DrainCount"]);
-			});
+			loggingBuilder.AddFileLogger(ctx.Configuration.GetSection("FileLogger"));
 		}
 
 		private static void ConfigureWebHost(IWebHostBuilder webHostBuilder)
