@@ -100,7 +100,11 @@ namespace FileLogger
 		{
 			(string log, int count) = DrainQueue();
 
-			string drainMessage = GetDrainMessage(count, fromDispose: fromDispose);
+			int eventId = fromDispose
+				? LogEventIds.DrainDisposed
+				: LogEventIds.DrainTimer;
+
+			string drainMessage = GetDrainMessage(count, eventId, fromDispose: fromDispose);
 
 			if (count > 0)
 			{
@@ -117,7 +121,7 @@ namespace FileLogger
 			}
 		}
 
-		private string GetDrainMessage(int count, bool fromDispose)
+		private string GetDrainMessage(int count, int eventId, bool fromDispose)
 		{
 			DateTimeOffset time = Options.UseUtcTimestamp
 				? DateTimeOffset.UtcNow
@@ -128,11 +132,12 @@ namespace FileLogger
 				: $"[{time.ToString(_options.TimestampFormat)}]";
 
 			string processName = $"{Process.GetCurrentProcess().ProcessName}.Sink";
+			string eventIdString = $"[{eventId}]";
 			string drainCountMessage = $"drained {count} {(count == 1 ? "message" : "messages")}";
 
 			return fromDispose
-				? $"{timestamp} sink: {processName} disposed {drainCountMessage}"
-				: $"{timestamp} sink: {processName} timer {drainCountMessage} (tick {(queueTimer?.Interval.ToString() ?? "unknown")} ms)";
+				? $"{timestamp} sink: {processName}{eventIdString} disposed {drainCountMessage}"
+				: $"{timestamp} sink: {processName}{eventIdString} timer {drainCountMessage} (tick {(queueTimer?.Interval.ToString() ?? "unknown")} ms)";
 		}
 
 		private async ValueTask WriteToFileAsync(string message)
