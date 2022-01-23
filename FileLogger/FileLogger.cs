@@ -42,6 +42,7 @@ namespace FileLogger
 			sb.Append($"{GetShortName(logLevel)}:");
 			sb.Append(" ");
 			sb.Append($"{categoryName}");
+			sb.Append($"[{eventId}]");
 			sb.Append(" ");
 			sb.Append(formatter(state, exception));
 
