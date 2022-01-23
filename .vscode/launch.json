@@ -6,7 +6,7 @@
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build",
-			"program": "${workspaceFolder}/bin/Debug/net6.0/FileLogger.dll",
+			"program": "${workspaceFolder}/NetCoreSample/bin/Debug/net6.0/NetCoreSample.dll",
 			"args": [
 				".\\test.txt"
 			],
