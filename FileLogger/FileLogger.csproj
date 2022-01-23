@@ -3,18 +3,19 @@
 	<PropertyGroup>
 		<OutputType>library</OutputType>
 		<PackageId>Kingloo.FileLogger</PackageId>
-		<PackageVersion>1.0.0</PackageVersion>
+		<PackageVersion>1.0.1</PackageVersion>
 		<Authors>Kingloo</Authors>
 		<Description>A flat-file logger.</Description>
 		<Copyright>© Kingloo 2021</Copyright>
 		<RepositoryUrl>https://github.com/Kingloo/FileLogger/</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<Tags>file logger logging</Tags>
+		<Tags>file,logger,logging</Tags>
 		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Microsoft.Extensions.Logging" Version="6.0.*" />
+		<PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.*" />
 	</ItemGroup>
 
 </Project>
