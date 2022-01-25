@@ -5,6 +5,7 @@ using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using Microsoft.Extensions.Logging;
 
 namespace FileLogger
 {
@@ -100,6 +101,18 @@ namespace FileLogger
 		{
 			(string log, int count) = DrainQueue();
 
+			if (fromDispose == false
+				&& count == 0
+				&& Options.LogLevel != LogLevel.Trace)
+			{
+				// if from Dispose, we write out everything no matter what
+				// if not from Dispose, we are from timer
+				// when from timer we only write out messages if there any
+				// on Trace we log timer spew messages as well
+
+				return;
+			}
+
 			int eventId = fromDispose
 				? LogEventIds.DrainDisposed
 				: LogEventIds.DrainTimer;
@@ -137,7 +150,7 @@ namespace FileLogger
 
 			return fromDispose
 				? $"{timestamp} sink: {processName}{eventIdString} disposed {drainCountMessage}"
-				: $"{timestamp} sink: {processName}{eventIdString} timer {drainCountMessage} (tick {(queueTimer?.Interval.ToString() ?? "unknown")} ms)";
+				: $"{timestamp} sink: {processName}{eventIdString} timer {drainCountMessage}";
 		}
 
 		private async ValueTask WriteToFileAsync(string message)
@@ -155,13 +168,13 @@ namespace FileLogger
 					FileOptions.Asynchronous);
 
 				await fsAsync.WriteAsync(Encoding.UTF8.GetBytes(message)).ConfigureAwait(false);
-
-				await fsAsync.FlushAsync().ConfigureAwait(false);
 			}
 			finally
 			{
 				if (fsAsync is not null)
 				{
+					await fsAsync.FlushAsync().ConfigureAwait(false);
+
 					await fsAsync.DisposeAsync().ConfigureAwait(false);
 				}
 			}

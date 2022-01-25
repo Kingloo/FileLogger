@@ -63,6 +63,8 @@ namespace AspNetCoreSample
 		private static void ConfigureHostConfiguration(IConfigurationBuilder configurationBuilder)
 		{
 			configurationBuilder.AddCommandLine(Environment.GetCommandLineArgs());
+
+			configurationBuilder.AddEnvironmentVariables();
 		}
 
 		private static void ConfigureAppConfiguration(HostBuilderContext ctx, IConfigurationBuilder configurationBuilder)
