@@ -65,11 +65,35 @@ namespace AspNetCoreSample
 			configurationBuilder.AddCommandLine(Environment.GetCommandLineArgs());
 
 			configurationBuilder.AddEnvironmentVariables();
+
+			configurationBuilder.SetBasePath(RuntimeCircumstance.GetRealLocation());
 		}
 
 		private static void ConfigureAppConfiguration(HostBuilderContext ctx, IConfigurationBuilder configurationBuilder)
 		{
-			configurationBuilder.AddJsonFile($"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json", optional: false);
+			string folder = RuntimeCircumstance.GetRealLocation();
+
+			string appsettingsFilename = Path.Combine(folder, "appsettings.json");
+			string appsettingsEnvironmentFilename = Path.Combine(folder, $"appsettings.{ctx.HostingEnvironment.EnvironmentName}.json");
+
+			if (File.Exists(appsettingsFilename))
+			{
+				configurationBuilder.AddJsonFile(
+					appsettingsFilename,
+					optional: false,
+					reloadOnChange: true);
+			}
+			else if (File.Exists(appsettingsEnvironmentFilename))
+			{
+				configurationBuilder.AddJsonFile(
+					appsettingsEnvironmentFilename,
+					optional: false,
+					reloadOnChange: true);
+			}
+			else
+			{
+				throw new FileNotFoundException("failed to find either appsettings file");
+			}
 		}
 
 		private static void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
@@ -85,10 +109,9 @@ namespace AspNetCoreSample
 			{
 				simpleConsoleOptions.ColorBehavior = LoggerColorBehavior.Enabled;
 				simpleConsoleOptions.SingleLine = true;
-				simpleConsoleOptions.TimestampFormat = ctx.Configuration["FileLogger.TimestampFormat"];
 			});
 
-			loggingBuilder.AddFileLogger(ctx.Configuration.GetSection("FileLogger"));
+			loggingBuilder.AddFileLogger();
 		}
 
 		private static void ConfigureWebHost(IWebHostBuilder webHostBuilder)

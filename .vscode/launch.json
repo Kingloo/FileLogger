@@ -2,7 +2,7 @@
 	"version": "0.2.0",
 	"configurations": [
 		{
-			"name": ".NET Launch (console)",
+			"name": ".NET Core Sample Launch (console)",
 			"type": "coreclr",
 			"request": "launch",
 			"preLaunchTask": "build",
@@ -10,6 +10,25 @@
 			"args": [
 				".\\test.txt"
 			],
+			"env": {
+				"Environment": "Development"
+			},
+			"cwd": "${workspaceFolder}",
+			"console": "internalConsole",
+			"stopAtEntry": false
+		},
+		{
+			"name": "ASP.NET Core Sample Launch (console)",
+			"type": "coreclr",
+			"request": "launch",
+			"preLaunchTask": "build",
+			"program": "${workspaceFolder}/AspNetCoreSample/bin/Debug/net6.0/AspNetCoreSample.dll",
+			"args": [
+				".\\test.txt"
+			],
+			"env": {
+				"Environment": "Development"
+			},
 			"cwd": "${workspaceFolder}",
 			"console": "internalConsole",
 			"stopAtEntry": false

@@ -43,9 +43,17 @@ namespace AspNetCoreSample
 
 			logger.LogInformation("startup started");
 
+			logger.LogDebug("environment: {0}", env.EnvironmentName);
+
 			if (env.IsDevelopment())
 			{
+				logger.LogTrace("using Developer exception page");
+
 				app.UseDeveloperExceptionPage();
+			}
+			else
+			{
+				logger.LogTrace("NOT using Developer exception page");
 			}
 
 			app.UseRouting();
