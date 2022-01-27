@@ -1,28 +1,29 @@
 using System;
 using System.Text;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
+using static FileLogger.Constants;
 
 namespace FileLogger
 {
 	public class FileLogger : ILogger
 	{
 		private readonly string categoryName;
-		private readonly FileLoggerOptions options;
 		private readonly IFileLoggerSink sink;
+		private readonly Func<FileLoggerOptions> getCurrentOptions;
 
-		public FileLogger(string categoryName, IOptions<FileLoggerOptions> options, IFileLoggerSink sink)
+		public FileLogger(string categoryName, IFileLoggerSink sink, Func<FileLoggerOptions> getCurrentOptions)
 		{
-			FileLoggerOptions.Validate(options.Value);
-
 			this.categoryName = categoryName;
-			this.options = options.Value;
 			this.sink = sink;
+			this.getCurrentOptions = getCurrentOptions;
 		}
 
 		public IDisposable BeginScope<TState>(TState state) => default!;
 
-		public bool IsEnabled(LogLevel logLevel) => logLevel >= options.LogLevel;
+		public bool IsEnabled(LogLevel logLevel)
+		{
+			return getCurrentOptions().MinimumLogLevel <= logLevel;
+		}
 
 		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
 		{
@@ -31,19 +32,32 @@ namespace FileLogger
 				return;
 			}
 
+			// we don't want the options used to change during a given log call
+			FileLoggerOptions currentOptions = getCurrentOptions();
+
 			StringBuilder sb = new StringBuilder();
 
-			DateTimeOffset time = options.UseUtcTimestamp
+			DateTimeOffset time = currentOptions.UseUtcTimestamp
 				? DateTimeOffset.UtcNow
 				: DateTimeOffset.Now;
 
-			sb.Append($"[{time.ToString(options.TimestampFormat)}]");
-			sb.Append(" ");
-			sb.Append($"{GetShortName(logLevel)}:");
-			sb.Append(" ");
-			sb.Append($"{categoryName}");
-			sb.Append($"[{eventId}]");
-			sb.Append(" ");
+			sb.Append(LeftSquareBracket);
+			sb.Append(time.ToString(currentOptions.TimestampFormat));
+			sb.Append(RightSquareBracket);
+
+			sb.Append(Space);
+
+			sb.Append(GetShortName(logLevel));
+			sb.Append(Colon);
+
+			sb.Append(Space);
+			sb.Append(categoryName);
+
+			sb.Append(LeftSquareBracket);
+			sb.Append(eventId);
+			sb.Append(RightSquareBracket);
+
+			sb.Append(Space);
 			sb.Append(formatter(state, exception));
 
 			sink.Pour(sb.ToString());
@@ -53,13 +67,13 @@ namespace FileLogger
 		{
 			return logLevel switch
 			{
-				LogLevel.None => "none",
 				LogLevel.Trace => "trce",
 				LogLevel.Debug => "dbug",
 				LogLevel.Information => "info",
 				LogLevel.Warning => "warn",
 				LogLevel.Error => "fail",
 				LogLevel.Critical => "crit",
+				LogLevel.None => "none",
 				_ => throw new ArgumentException($"not a valid LogLevel: {logLevel.ToString()}", nameof(logLevel))
 			};
 		}

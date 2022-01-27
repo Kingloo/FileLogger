@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Extensions.Logging;
+using static FileLogger.Constants;
 
 namespace FileLogger
 {
@@ -103,7 +103,7 @@ namespace FileLogger
 
 			if (fromDispose == false
 				&& count == 0
-				&& Options.LogLevel != LogLevel.Trace)
+				&& Options.MinimumLogLevel > LogLevel.Trace)
 			{
 				// if from Dispose, we write out everything no matter what
 				// if not from Dispose, we are from timer
@@ -140,17 +140,33 @@ namespace FileLogger
 				? DateTimeOffset.UtcNow
 				: DateTimeOffset.Now;
 
-			string timestamp = Options.UseUtcTimestamp
-				? $"[{time.ToString(_options.TimestampFormat)}]"
-				: $"[{time.ToString(_options.TimestampFormat)}]";
+			StringBuilder sb = new StringBuilder();
 
-			string processName = $"{Process.GetCurrentProcess().ProcessName}.Sink";
-			string eventIdString = $"[{eventId}]";
-			string drainCountMessage = $"drained {count} {(count == 1 ? "message" : "messages")}";
+			sb.Append(LeftSquareBracket);
+			sb.Append(time.ToString(_options.TimestampFormat));
+			sb.Append(RightSquareBracket);
 
-			return fromDispose
-				? $"{timestamp} sink: {processName}{eventIdString} disposed {drainCountMessage}"
-				: $"{timestamp} sink: {processName}{eventIdString} timer {drainCountMessage}";
+			sb.Append(" sink: ");
+
+			sb.Append(AppDomain.CurrentDomain.FriendlyName);
+			sb.Append(".Sink");
+
+			sb.Append(LeftSquareBracket);
+			sb.Append(eventId);
+			sb.Append(RightSquareBracket);
+
+			if (fromDispose)
+			{
+				sb.Append(" disposed ");
+			}
+			else
+			{
+				sb.Append(" timer ");
+			}
+
+			sb.Append($"drained {count} {(count == 1 ? "message" : "messages")}");
+
+			return sb.ToString();
 		}
 
 		private async ValueTask WriteToFileAsync(string message)

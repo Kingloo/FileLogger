@@ -1,37 +1,32 @@
 using System;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Configuration;
 
 namespace FileLogger
 {
 	public static class FileLoggerExtensions
 	{
-		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder loggingBuilder, IConfigurationSection configurationSection)
+		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder builder)
 		{
-			loggingBuilder.Services.AddOptions<FileLoggerOptions>().Configure(options =>
-			{
-				options.Path = configurationSection["Path"];
-				options.LogLevel = Enum.Parse<LogLevel>(configurationSection["LogLevel"]);
-				options.TimestampFormat = configurationSection["TimestampFormat"];
-				options.UseUtcTimestamp = bool.Parse(configurationSection["UseUtcTimestamp"]);
-				options.DrainIntervalMs = Int32.Parse(configurationSection["DrainIntervalMs"]);
-				options.DrainCount = Int32.Parse(configurationSection["DrainCount"]);
-			});
+			builder.AddConfiguration();
 
-			loggingBuilder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
+			builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, FileLoggerProvider>());
 
-			return loggingBuilder;
+			LoggerProviderOptions.RegisterProviderOptions<FileLoggerOptions, FileLoggerProvider>(builder.Services);
+
+			return builder;
 		}
 
-		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder loggingBuilder, Action<FileLoggerOptions> configure)
+		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder builder, Action<FileLoggerOptions> configure)
 		{
-			loggingBuilder.Services.AddOptions<FileLoggerOptions>()
-				.Configure(configure);
+			builder.AddFileLogger();
 
-			loggingBuilder.Services.AddSingleton<ILoggerProvider, FileLoggerProvider>();
+			builder.Services.Configure(configure);
 
-			return loggingBuilder;
+			return builder;
 		}
 	}
 }
