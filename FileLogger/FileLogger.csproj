@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutputType>library</OutputType>
 		<PackageId>Kingloo.FileLogger</PackageId>
-		<PackageVersion>1.3.0</PackageVersion>
+		<PackageVersion>1.4.0</PackageVersion>
 		<Authors>Kingloo</Authors>
 		<Description>A flat-file logger.</Description>
 		<Copyright>© Kingloo 2021</Copyright>
@@ -20,3 +20,5 @@
 	</ItemGroup>
 
 </Project>
+
+<!-- https://github.com/dotnet/docs/blob/main/docs/core/extensions/custom-logging-provider.md -->

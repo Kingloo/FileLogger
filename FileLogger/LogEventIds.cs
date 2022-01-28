@@ -2,7 +2,8 @@ namespace FileLogger
 {
 	internal static class LogEventIds
 	{
-		internal static int DrainTimer = 0;
-		internal static int DrainDisposed = 1;
+		internal const int Timer = 0;
+		internal const int Disposed = 1;
+		internal const int OptionsUpdated = 2;
 	}
 }
