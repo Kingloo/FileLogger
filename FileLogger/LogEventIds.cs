@@ -2,15 +2,21 @@ using System.Linq;
 
 namespace FileLogger
 {
-	internal static class LogEventIds
+	public static class LogEventIds
 	{
-		internal const int Timer = 0;
-		internal const int Disposed = 1;
-		internal const int OptionsUpdated = 2;
+		public const int Disposed = 0;
+		public const int Timer = 1;
+		public const int OptionsUpdated = 2;
 
-		internal static bool ShouldLogEventId(int[] eventIds, int eventId)
+		public static bool ShouldLogFileLoggerEventId(int[] eventIds, int eventId)
 		{
 			if (eventIds.Length == 0)
+			{
+				return false;
+			}
+
+			if (eventIds.Length == 1
+				&& eventIds[0] == -1)
 			{
 				return true;
 			}

@@ -2,13 +2,10 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using Microsoft.Extensions.Logging;
-using static FileLogger.Constants;
 using static FileLogger.FileLoggerHelpers;
 
 namespace FileLogger
@@ -86,15 +83,8 @@ namespace FileLogger
 			IList<string> messages = DrainQueue(drainEntireQueue: fromDispose);
 
 			if (fromDispose == false
-				&& messages.Count == 0
-				&& options.MinimumLogLevel > LogLevel.Trace)
+				&& messages.Count == 0)
 			{
-				// to avoid log spam saying that timer ran but drained no new messages
-				// we don't run if
-				//		not from dispose
-				//		there are no message
-				//		FileLoggerOptions is above Trace
-
 				return;
 			}
 
@@ -154,7 +144,7 @@ namespace FileLogger
 				sb.AppendLine(messagePrependedWithTimestamp);
 			}
 
-			if (LogEventIds.ShouldLogEventId(options.LogEventIds, eventId))
+			if (LogEventIds.ShouldLogFileLoggerEventId(options.LogEventIds, eventId))
 			{
 				string sinkMessage = CreateSinkMessage(messages.Count, eventId, fromDispose);
 				string sinkMessagePrependedWithTimestamp = PrependTimestamp(sinkMessage, time, options);
