@@ -32,6 +32,7 @@ namespace NetCoreSample
 					logging.AddFileLogger(options =>
 					{
 						options.Path = @".\test.txt";
+						options.LogEventIds = new int[] { LogEventIds.Timer };
 					});
 				})
 				.AddTransient<MyService>()
@@ -54,23 +55,23 @@ namespace NetCoreSample
 			programLogger.LogError("error");
 			programLogger.LogCritical("critical");
 
-			// int messagesToWrite = 10;
+			int messagesToWrite = 10;
 
-			// MyService myService = serviceProvider.GetRequiredService<MyService>();
+			MyService myService = serviceProvider.GetRequiredService<MyService>();
 
-			// for (int i = 1; i < messagesToWrite + 1; i++)
-			// {
-			// 	myService.DoStuff($"fred {i}");
+			for (int i = 1; i < messagesToWrite + 1; i++)
+			{
+				myService.DoStuff($"fred {i}");
 
-			// 	if (i % 7 == 0)
-			// 	{
-			// 		programLogger.LogCritical($"i am a critical message from program logger");
-			// 	}
+				if (i % 7 == 0)
+				{
+					programLogger.LogCritical($"i am a critical message from program logger");
+				}
 
-			// 	await Task.Delay(TimeSpan.FromMilliseconds(100d));
-			// }
+				await Task.Delay(TimeSpan.FromMilliseconds(100d));
+			}
 
-			// programLogger.LogInformation("ended");
+			programLogger.LogInformation("ended");
 
 			return 0;
 		}
