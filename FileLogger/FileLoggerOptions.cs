@@ -12,7 +12,7 @@ namespace FileLogger
 		public string TimestampFormat { get; set; } = DefaultTimestampFormat;
 		public bool UseUtcTimestamp { get; set; } = false;
 		public int DrainIntervalMs { get; set; } = 1000;
-		public int DrainCount { get; set; } = 10;
+		public int DrainCount { get; set; } = 50;
 		public int[] LogEventIds { get; set; } = Array.Empty<int>();
 
 		public FileLoggerOptions() { }
