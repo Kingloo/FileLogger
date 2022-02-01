@@ -2,6 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -153,10 +154,13 @@ namespace FileLogger
 				sb.AppendLine(messagePrependedWithTimestamp);
 			}
 
-			string sinkMessage = CreateSinkMessage(messages.Count, eventId, fromDispose);
-			string sinkMessagePrependedWithTimestamp = PrependTimestamp(sinkMessage, time, options);
+			if (LogEventIds.ShouldLogEventId(options.LogEventIds, eventId))
+			{
+				string sinkMessage = CreateSinkMessage(messages.Count, eventId, fromDispose);
+				string sinkMessagePrependedWithTimestamp = PrependTimestamp(sinkMessage, time, options);
 
-			sb.AppendLine(sinkMessagePrependedWithTimestamp);
+				sb.AppendLine(sinkMessagePrependedWithTimestamp);
+			}
 
 			return sb.ToString();
 		}
