@@ -6,7 +6,7 @@
 		<PackageVersion>1.5.0</PackageVersion>
 		<Authors>Kingloo</Authors>
 		<Description>A flat-file logger.</Description>
-		<Copyright>© Kingloo 2021</Copyright>
+		<Copyright>© Kingloo 2022</Copyright>
 		<RepositoryUrl>https://github.com/Kingloo/FileLogger/</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Tags>file,logger,logging</Tags>
