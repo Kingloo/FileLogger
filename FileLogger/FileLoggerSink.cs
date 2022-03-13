@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -10,7 +11,7 @@ using static FileLogger.FileLoggerHelpers;
 
 namespace FileLogger
 {
-	public class FileLoggerSink : IFileLoggerSink
+	public sealed class FileLoggerSink : IFileLoggerSink
 	{
 		private readonly ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
 		private System.Timers.Timer? queueTimer;
@@ -88,7 +89,9 @@ namespace FileLogger
 				return;
 			}
 
-			int eventId = fromDispose ? LogEventIds.Disposed : LogEventIds.Timer;
+			int eventId = fromDispose
+				? LogEventIds.Disposed
+				: LogEventIds.Timer;
 
 			string drainMessage = CreateDrainMessage(messages, eventId, fromDispose: fromDispose);
 
@@ -96,7 +99,7 @@ namespace FileLogger
 
 			if (fromDispose)
 			{
-				await Task.Delay(TimeSpan.FromMilliseconds(100d)).ConfigureAwait(false);
+				await Task.Delay(TimeSpan.FromMilliseconds(100d), cancellationToken).ConfigureAwait(false);
 			}
 		}
 
@@ -105,7 +108,7 @@ namespace FileLogger
 
 		private IList<string> DrainQueue(bool drainEntireQueue)
 		{
-			if (queue.Count == 0)
+			if (queue.IsEmpty)
 			{
 				return Array.Empty<string>();
 			}
@@ -170,7 +173,7 @@ namespace FileLogger
 				sb.Append(" Timer ");
 			}
 
-			sb.Append($"drained {messagesCount} {(messagesCount == 1 ? "message" : "messages")}");
+			sb.Append(CultureInfo.CurrentCulture, $"drained {messagesCount} {(messagesCount == 1 ? "message" : "messages")}");
 
 			return sb.ToString();
 		}
