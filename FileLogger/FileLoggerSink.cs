@@ -49,6 +49,7 @@ namespace FileLogger
 				queueTimer.Stop();
 				queueTimer.Elapsed -= QueueTimer_Elapsed;
 				queueTimer.Dispose();
+				queueTimer = null;
 			}
 		}
 
@@ -196,12 +197,16 @@ namespace FileLogger
 			}
 			finally
 			{
+// analysis mode->all asserts that the following 'is not null' check will always be true
+// but without that check you get yellow squigglies under first fsAsync warning that it might be null
+# pragma warning disable CA1508
 				if (fsAsync is not null)
 				{
 					await fsAsync.FlushAsync().ConfigureAwait(false);
 
 					await fsAsync.DisposeAsync().ConfigureAwait(false);
 				}
+# pragma warning restore CA1508
 			}
 		}
 
