@@ -18,6 +18,11 @@ namespace FileLogger
 
 		public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> monitoredFileLoggerOptions, IFileLoggerSink sink)
 		{
+			if (monitoredFileLoggerOptions is null)
+			{
+				throw new ArgumentNullException(nameof(monitoredFileLoggerOptions));
+			}
+
 			this.options = monitoredFileLoggerOptions.CurrentValue;
 
 			optionsChangeToken = monitoredFileLoggerOptions.OnChange(OnOptionsChanged);
@@ -58,7 +63,7 @@ namespace FileLogger
 			}
 		}
 
-		void IDisposable.Dispose()
+		public void Dispose()
 		{
 			Dispose(disposing: true);
 			GC.SuppressFinalize(this);
