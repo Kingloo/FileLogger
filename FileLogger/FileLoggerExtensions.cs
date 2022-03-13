@@ -11,6 +11,11 @@ namespace FileLogger
 	{
 		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder builder)
 		{
+			if (builder is null)
+			{
+				throw new ArgumentNullException(nameof(builder));
+			}
+
 			builder.AddConfiguration();
 
 			builder.Services.TryAddEnumerable(ServiceDescriptor.Singleton<ILoggerProvider, FileLoggerProvider>());
@@ -22,6 +27,11 @@ namespace FileLogger
 
 		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder builder, Action<FileLoggerOptions> configure)
 		{
+			if (builder is null)
+			{
+				throw new ArgumentNullException(nameof(builder));
+			}
+
 			builder.AddFileLogger();
 
 			builder.Services.Configure(configure);
