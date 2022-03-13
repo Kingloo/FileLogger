@@ -32,7 +32,7 @@ namespace NetCoreSample
 					logging.AddFileLogger(options =>
 					{
 						options.Path = @".\test.txt";
-						options.LogEventIds = new int[] { LogEventIds.Timer };
+						options.LogEventIds.Add(LogEventIds.Timer);
 					});
 				})
 				.AddTransient<MyService>()
