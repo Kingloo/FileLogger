@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using static FileLogger.Constants;
@@ -25,7 +26,7 @@ namespace FileLogger
 			StringBuilder sb = new StringBuilder();
 
 			sb.Append(LeftSquareBracket);
-			sb.Append(time.ToString(options.TimestampFormat));
+			sb.Append(time.ToString(options.TimestampFormat, CultureInfo.CurrentCulture));
 			sb.Append(RightSquareBracket);
 
 			sb.Append(Space);
