@@ -39,7 +39,9 @@ namespace FileLogger
 			sink.Pour($"{categoryNameAndEventId} options updated");
 		}
 
+# pragma warning disable CA1024
 		public FileLoggerOptions GetCurrentOptions() => options;
+# pragma warning restore CA1024
 
 		public ILogger CreateLogger(string categoryName)
 		{
