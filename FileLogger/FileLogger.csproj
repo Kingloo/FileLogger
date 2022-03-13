@@ -11,6 +11,8 @@
 		<RepositoryType>git</RepositoryType>
 		<Tags>file,logger,logging</Tags>
 		<RestoreProjectStyle>PackageReference</RestoreProjectStyle>
+		<AnalysisMode>all</AnalysisMode>
+		<EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
 	</PropertyGroup>
 
 	<ItemGroup>
