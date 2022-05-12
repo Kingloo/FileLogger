@@ -11,21 +11,30 @@ namespace FileLogger
 	[ProviderAlias("FileLogger")]
 	public sealed class FileLoggerProvider : ILoggerProvider
 	{
-		private readonly IDisposable optionsChangeToken;
+		private readonly IDisposable? optionsChangeToken;
 		private FileLoggerOptions options;
 		private readonly IFileLoggerSink sink;
 		private readonly ConcurrentDictionary<string, FileLogger> loggers = new ConcurrentDictionary<string, FileLogger>();
 
-		public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> monitoredFileLoggerOptions, IFileLoggerSink sink)
+		public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> monitoredOptions, IFileLoggerSink sink)
+			: this(monitoredOptions.CurrentValue, sink)
 		{
-			if (monitoredFileLoggerOptions is null)
+			if (monitoredOptions is null)
 			{
-				throw new ArgumentNullException(nameof(monitoredFileLoggerOptions));
+				throw new ArgumentNullException(nameof(monitoredOptions));
 			}
 
-			this.options = monitoredFileLoggerOptions.CurrentValue;
+			optionsChangeToken = monitoredOptions.OnChange(OnOptionsChanged);
+		}
 
-			optionsChangeToken = monitoredFileLoggerOptions.OnChange(OnOptionsChanged);
+		public FileLoggerProvider(FileLoggerOptions options, IFileLoggerSink sink)
+		{
+			if (options is null)
+			{
+				throw new ArgumentNullException(nameof(options));
+			}
+
+			this.options = options;
 
 			this.sink = sink;
 		}
@@ -58,7 +67,7 @@ namespace FileLogger
 				{
 					loggers.Clear();
 
-					optionsChangeToken.Dispose();
+					optionsChangeToken?.Dispose();
 				}
 
 				disposedValue = true;

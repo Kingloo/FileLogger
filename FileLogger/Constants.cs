@@ -1,5 +1,3 @@
-using System;
-
 namespace FileLogger
 {
 	public static class Constants
