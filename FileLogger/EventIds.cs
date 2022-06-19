@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace FileLogger
 {
-	public static class LogEventIds
+	public static class EventIds
 	{
 		public const int Disposed = 0;
 		public const int Timer = 1;

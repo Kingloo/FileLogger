@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
+using Microsoft.Extensions.Logging;
 using static FileLogger.FileLoggerHelpers;
 
 namespace FileLogger
@@ -20,7 +20,17 @@ namespace FileLogger
 
 		public FileLoggerSink() { }
 
-		public void Start(FileLoggerOptions options)
+		public FileLoggerSink(FileLoggerOptions options)
+		{
+			if (options is null)
+			{
+				throw new ArgumentNullException(nameof(options));
+			}
+
+			this.options = options;
+		}
+
+		public void StartSink(FileLoggerOptions options)
 		{
 			if (options is null)
 			{
@@ -42,7 +52,7 @@ namespace FileLogger
 			}
 		}
 
-		public void Stop()
+		public void StopSink()
 		{
 			StopDrainTimer();
 		}
@@ -60,60 +70,55 @@ namespace FileLogger
 
 		private async void QueueTimer_Elapsed(object? sender, ElapsedEventArgs e)
 		{
-			await DrainQueueAndWriteAsync().ConfigureAwait(false);
+			await DrainQueueAndWriteAsync(wasCalledFromDispose: false, CancellationToken.None).ConfigureAwait(false);
 		}
 
-		public void Pour(string message)
+		public void Pour(LogLevel logLevel, EventId eventId, string categoryName, string message)
 		{
-			if (String.IsNullOrWhiteSpace(message))
+			if (String.IsNullOrWhiteSpace(categoryName))
 			{
-				throw new ArgumentNullException(nameof(message), "your message was null-or-whitespace");
+				throw new ArgumentNullException(nameof(categoryName), $"your {nameof(categoryName)} was null-or-whitespace");
 			}
 
-			queue.Enqueue(message);
+			if (String.IsNullOrWhiteSpace(message))
+			{
+				throw new ArgumentNullException(nameof(message), $"your {nameof(message)} was null-or-whitespace");
+			}
+
+			string formattedMessage = FormatMessage(logLevel, eventId.Id, categoryName, message, options);
+
+			queue.Enqueue(formattedMessage);
 		}
 
 		public ValueTask DrainAsync()
 			=> DrainAsync(CancellationToken.None);
 
 		public ValueTask DrainAsync(CancellationToken cancellationToken)
-			=> DrainQueueAndWriteAsync(fromDispose: false, cancellationToken);
+			=> DrainQueueAndWriteAsync(wasCalledFromDispose: false, cancellationToken);
 
-		private ValueTask DrainQueueAndWriteAsync()
-			=> DrainQueueAndWriteAsync(fromDispose: false, CancellationToken.None);
-
-		private ValueTask DrainQueueAndWriteAsync(bool fromDispose)
-			=> DrainQueueAndWriteAsync(fromDispose, CancellationToken.None);
-
-		private ValueTask DrainQueueAndWriteAsync(CancellationToken cancellationToken)
-			=> DrainQueueAndWriteAsync(fromDispose: false, cancellationToken);
-
-		private async ValueTask DrainQueueAndWriteAsync(bool fromDispose, CancellationToken cancellationToken)
+		private async ValueTask DrainQueueAndWriteAsync(bool wasCalledFromDispose, CancellationToken cancellationToken)
 		{
-			IList<string> messages = DrainQueue(drainEntireQueue: fromDispose);
+			IList<string> messages = DrainQueue(drainEntireQueue: wasCalledFromDispose);
 
-			if (fromDispose == false
+			if (wasCalledFromDispose == false
 				&& messages.Count == 0)
 			{
 				return;
 			}
 
-			int eventId = fromDispose
-				? LogEventIds.Disposed
-				: LogEventIds.Timer;
+			int eventId = wasCalledFromDispose
+				? EventIds.Disposed
+				: EventIds.Timer;
 
-			string drainMessage = CreateDrainMessage(messages, eventId, fromDispose: fromDispose);
+			string drainMessage = CreateDrainMessage(messages, eventId, wasCalledFromDispose: wasCalledFromDispose);
 
-			await WriteToFileAsync(drainMessage).ConfigureAwait(false);
+			await WriteToFileAsync(drainMessage, cancellationToken).ConfigureAwait(false);
 
-			if (fromDispose)
+			if (wasCalledFromDispose)
 			{
 				await Task.Delay(TimeSpan.FromMilliseconds(100d), cancellationToken).ConfigureAwait(false);
 			}
 		}
-
-		private IList<string> DrainQueue()
-			=> DrainQueue(drainEntireQueue: false);
 
 		private IList<string> DrainQueue(bool drainEntireQueue)
 		{
@@ -124,7 +129,7 @@ namespace FileLogger
 
 			uint drainedCount = 0;
 
-			List<string> messages = new List<string>();
+			IList<string> messages = new List<string>();
 
 			int maxMessagesToDrainThisRun = drainEntireQueue
 				? Int32.MaxValue
@@ -141,7 +146,7 @@ namespace FileLogger
 			return messages;
 		}
 
-		private string CreateDrainMessage(IList<string> messages, int eventId, bool fromDispose)
+		private string CreateDrainMessage(IList<string> messages, int eventId, bool wasCalledFromDispose)
 		{
 			StringBuilder sb = new StringBuilder();
 
@@ -151,43 +156,17 @@ namespace FileLogger
 
 			foreach (string message in messages)
 			{
-				string messagePrependedWithTimestamp = PrependTimestamp(message, time, options);
-
-				sb.AppendLine(messagePrependedWithTimestamp);
+				sb.AppendLine(message);
 			}
 
-			if (LogEventIds.ShouldLogFileLoggerEventId(options.LogEventIds, eventId))
-			{
-				string sinkMessage = CreateSinkMessage(messages.Count, eventId, fromDispose);
-				string sinkMessagePrependedWithTimestamp = PrependTimestamp(sinkMessage, time, options);
+			string sinkLogMessage = FormatSinkMessage(LogLevel.Information, eventId, options, messages.Count, wasCalledFromDispose);
 
-				sb.AppendLine(sinkMessagePrependedWithTimestamp);
-			}
+			sb.AppendLine(sinkLogMessage);
 
 			return sb.ToString();
 		}
 
-		private static string CreateSinkMessage(int messagesCount, int eventId, bool fromDispose)
-		{
-			StringBuilder sb = new StringBuilder();
-
-			sb.Append(CreateFileLoggerSinkCategoryNameAndEventId(eventId));
-
-			if (fromDispose)
-			{
-				sb.Append(" Dispose ");
-			}
-			else
-			{
-				sb.Append(" Timer ");
-			}
-
-			sb.Append(CultureInfo.CurrentCulture, $"drained {messagesCount} {(messagesCount == 1 ? "message" : "messages")}");
-
-			return sb.ToString();
-		}
-
-		private async ValueTask WriteToFileAsync(string message)
+		private async ValueTask WriteToFileAsync(string message, CancellationToken cancellationToken)
 		{
 			FileStream? fsAsync = null;
 
@@ -201,9 +180,9 @@ namespace FileLogger
 					4096,
 					FileOptions.Asynchronous);
 
-				await fsAsync.WriteAsync(Encoding.UTF8.GetBytes(message)).ConfigureAwait(false);
+				await fsAsync.WriteAsync(Encoding.UTF8.GetBytes(message), cancellationToken).ConfigureAwait(false);
 
-				await fsAsync.FlushAsync().ConfigureAwait(false);
+				await fsAsync.FlushAsync(CancellationToken.None).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -222,7 +201,7 @@ namespace FileLogger
 		{
 			StopDrainTimer();
 
-			await DrainQueueAndWriteAsync(fromDispose: true).ConfigureAwait(false);
+			await DrainQueueAndWriteAsync(wasCalledFromDispose: true, CancellationToken.None).ConfigureAwait(false);
 		}
 	}
 }

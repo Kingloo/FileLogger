@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<OutputType>library</OutputType>
 		<PackageId>Kingloo.FileLogger</PackageId>
-		<PackageVersion>1.7.0</PackageVersion>
+		<PackageVersion>1.8.0</PackageVersion>
 		<Authors>Kingloo</Authors>
 		<Description>A flat-file logger.</Description>
 		<Copyright>© Kingloo 2022</Copyright>

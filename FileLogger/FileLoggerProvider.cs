@@ -3,7 +3,8 @@ using System.Collections.Concurrent;
 using System.Runtime.Versioning;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using static FileLogger.FileLoggerHelpers;
+using static FileLogger.Constants;
+using static FileLogger.EventIds;
 
 namespace FileLogger
 {
@@ -45,9 +46,7 @@ namespace FileLogger
 		{
 			options = updatedOptions;
 
-			string categoryNameAndEventId = CreateFileLoggerSinkCategoryNameAndEventId(LogEventIds.OptionsUpdated);
-
-			sink.Pour($"{categoryNameAndEventId} options updated");
+			sink.Pour(LogLevel.Information, OptionsUpdated, FileLoggerSinkCategoryName, "options updated");
 		}
 
 # pragma warning disable CA1024

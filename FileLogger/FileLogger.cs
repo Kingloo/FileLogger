@@ -1,8 +1,5 @@
 using System;
-using System.Text;
 using Microsoft.Extensions.Logging;
-using static FileLogger.Constants;
-using static FileLogger.FileLoggerHelpers;
 
 namespace FileLogger
 {
@@ -43,30 +40,22 @@ namespace FileLogger
 
 		public void Log<TState>(LogLevel logLevel, EventId eventId, TState state, Exception? exception, Func<TState, Exception?, string> formatter)
 		{
-			if (formatter is null)
-			{
-				throw new ArgumentNullException(nameof(formatter));
-			}
-
 			if (!IsEnabled(logLevel))
 			{
 				return;
 			}
 
-			StringBuilder sb = new StringBuilder();
+			if (state is null)
+			{
+				throw new ArgumentNullException(nameof(state));
+			}
 
-			sb.Append(categoryName);
+			if (formatter is null)
+			{
+				throw new ArgumentNullException(nameof(formatter));
+			}
 
-			sb.Append(FormatEventId(eventId));
-			sb.Append(Space);
-
-			sb.Append(GetShortName(logLevel));
-			sb.Append(Colon);
-			sb.Append(Space);
-
-			sb.Append(formatter(state, exception));
-
-			sink.Pour(sb.ToString());
+			sink.Pour(logLevel, eventId, categoryName, formatter(state, exception));
 		}
 	}
 }

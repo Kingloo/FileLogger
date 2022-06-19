@@ -1,16 +1,15 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace FileLogger
 {
 	public interface IFileLoggerSink : IAsyncDisposable
 	{
-		void Start(FileLoggerOptions options);
-#pragma warning disable CA1716
-		void Stop();
-#pragma warning restore CA1716
-		void Pour(string message);
+		void StartSink(FileLoggerOptions options);
+		void StopSink();
+		void Pour(LogLevel logLevel, EventId eventId, string categoryName, string message);
 		ValueTask DrainAsync();
 		ValueTask DrainAsync(CancellationToken cancellationToken);
 	}

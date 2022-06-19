@@ -37,7 +37,7 @@ namespace AspNetCoreSample
 			var sink = serviceProvider.GetRequiredService<IFileLoggerSink>();
 			var fileLoggerOptions = serviceProvider.GetRequiredService<IOptions<FileLoggerOptions>>().Value;
 
-			sink.Start(fileLoggerOptions);
+			sink.StartSink(fileLoggerOptions);
 
 			var logger = loggerFactory.CreateLogger<Startup>();
 
