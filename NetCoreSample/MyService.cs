@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Extensions.Logging;
 
 namespace NetCoreSample
@@ -8,11 +9,21 @@ namespace NetCoreSample
 
 		public MyService(ILogger<MyService> logger)
 		{
+			if (logger is null)
+			{
+				throw new ArgumentNullException(nameof(logger));
+			}
+
 			this.logger = logger;
 		}
 
 		public void DoStuff(string message)
 		{
+			if (String.IsNullOrWhiteSpace(message))
+			{
+				throw new ArgumentNullException(nameof(message));
+			}
+
 			logger.LogInformation(message);
 		}
 	}
