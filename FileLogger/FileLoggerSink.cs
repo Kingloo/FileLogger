@@ -22,6 +22,11 @@ namespace FileLogger
 
 		public void Start(FileLoggerOptions options)
 		{
+			if (options is null)
+			{
+				throw new ArgumentNullException(nameof(options));
+			}
+
 			this.options = options;
 
 			StartDrainTimer();
@@ -60,7 +65,10 @@ namespace FileLogger
 
 		public void Pour(string message)
 		{
-			message = String.IsNullOrWhiteSpace(message) ? "empty message" : message;
+			if (String.IsNullOrWhiteSpace(message))
+			{
+				throw new ArgumentNullException(nameof(message), "your message was null-or-whitespace");
+			}
 
 			queue.Enqueue(message);
 		}
@@ -114,7 +122,7 @@ namespace FileLogger
 				return Array.Empty<string>();
 			}
 
-			int drainedCount = 0;
+			uint drainedCount = 0;
 
 			List<string> messages = new List<string>();
 
