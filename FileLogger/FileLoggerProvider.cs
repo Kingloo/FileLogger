@@ -16,8 +16,11 @@ namespace FileLogger
 		private readonly IFileLoggerSink sink;
 		private readonly ConcurrentDictionary<string, FileLogger> loggers = new ConcurrentDictionary<string, FileLogger>();
 
+// it thinks that passing monitoredOptions to the other ctor counts as a use, even if we are checking it in the other ctor
+#pragma warning disable CA1062
 		public FileLoggerProvider(IOptionsMonitor<FileLoggerOptions> monitoredOptions, IFileLoggerSink sink)
 			: this(monitoredOptions.CurrentValue, sink)
+#pragma warning restore CA1062
 		{
 			if (monitoredOptions is null)
 			{
@@ -35,7 +38,6 @@ namespace FileLogger
 			}
 
 			this.options = options;
-
 			this.sink = sink;
 		}
 
