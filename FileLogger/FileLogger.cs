@@ -14,6 +14,21 @@ namespace FileLogger
 
 		public FileLogger(string categoryName, IFileLoggerSink sink, Func<FileLoggerOptions> getCurrentOptions)
 		{
+			if (String.IsNullOrWhiteSpace(categoryName))
+			{
+				throw new ArgumentNullException(nameof(categoryName));
+			}
+
+			if (sink is null)
+			{
+				throw new ArgumentNullException(nameof(sink));
+			}
+
+			if (getCurrentOptions is null)
+			{
+				throw new ArgumentNullException(nameof(getCurrentOptions));
+			}
+
 			this.categoryName = categoryName;
 			this.sink = sink;
 			this.getCurrentOptions = getCurrentOptions;
