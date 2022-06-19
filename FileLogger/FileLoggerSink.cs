@@ -194,6 +194,8 @@ namespace FileLogger
 					FileOptions.Asynchronous);
 
 				await fsAsync.WriteAsync(Encoding.UTF8.GetBytes(message)).ConfigureAwait(false);
+
+				await fsAsync.FlushAsync().ConfigureAwait(false);
 			}
 			finally
 			{
@@ -202,8 +204,6 @@ namespace FileLogger
 # pragma warning disable CA1508
 				if (fsAsync is not null)
 				{
-					await fsAsync.FlushAsync().ConfigureAwait(false);
-
 					await fsAsync.DisposeAsync().ConfigureAwait(false);
 				}
 # pragma warning restore CA1508
