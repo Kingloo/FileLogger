@@ -112,7 +112,7 @@ namespace FileLogger
 
 			string drainMessage = CreateDrainMessage(messages, eventId, wasCalledFromDispose: wasCalledFromDispose);
 
-			await WriteToFileAsync(drainMessage, cancellationToken).ConfigureAwait(false);
+			await WriteToFileAsync(drainMessage, options, cancellationToken).ConfigureAwait(false);
 
 			if (wasCalledFromDispose)
 			{
@@ -150,23 +150,22 @@ namespace FileLogger
 		{
 			StringBuilder sb = new StringBuilder();
 
-			DateTimeOffset time = options.UseUtcTimestamp
-				? DateTimeOffset.UtcNow
-				: DateTimeOffset.Now;
-
 			foreach (string message in messages)
 			{
 				sb.AppendLine(message);
 			}
 
-			string sinkLogMessage = FormatSinkMessage(LogLevel.Information, eventId, options, messages.Count, wasCalledFromDispose);
+			if (options.IncludeProviderMessages)
+			{
+				string sinkLogMessage = FormatSinkMessage(LogLevel.Information, eventId, options, messages.Count, wasCalledFromDispose);
 
-			sb.AppendLine(sinkLogMessage);
+				sb.AppendLine(sinkLogMessage);
+			}
 
 			return sb.ToString();
 		}
 
-		private async ValueTask WriteToFileAsync(string message, CancellationToken cancellationToken)
+		private static async ValueTask WriteToFileAsync(string message, FileLoggerOptions options, CancellationToken cancellationToken)
 		{
 			FileStream? fsAsync = null;
 

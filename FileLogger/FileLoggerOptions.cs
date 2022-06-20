@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
 namespace FileLogger
@@ -9,11 +8,11 @@ namespace FileLogger
 
 		public string Path { get; set; } = string.Empty;
 		public LogLevel MinimumLogLevel { get; set; } = LogLevel.Trace;
+		public bool IncludeProviderMessages { get; set; } = false;
 		public string TimestampFormat { get; set; } = DefaultTimestampFormat;
 		public bool UseUtcTimestamp { get; set; } = false;
-		public int DrainIntervalMs { get; set; } = 1000;
+		public int DrainIntervalMs { get; set; } = 5000;
 		public int DrainCount { get; set; } = 50;
-		public IList<int> LogEventIds { get; } = new List<int>();
 
 		public FileLoggerOptions() { }
 	}
