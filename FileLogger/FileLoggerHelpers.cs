@@ -34,6 +34,9 @@ namespace FileLogger
 			sb.Append(Space);
 
 			sb.Append(GetProgramName());
+			sb.Append(LeftSquareBracket);
+			sb.Append(Environment.ProcessId);
+			sb.Append(RightSquareBracket);
 			sb.Append(Space);
 
 			sb.Append(GetLogLevelShortName(logLevel));
