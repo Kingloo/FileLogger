@@ -7,6 +7,6 @@ namespace FileLogger
 		public const char Colon = ':';
 		public const char LeftSquareBracket = '[';
 		public const char RightSquareBracket = ']';
-		public static readonly string FileLoggerSinkCategoryName = "FileLogger.Sink";
+		public const string FileLoggerSinkCategoryName = "FileLogger.Sink";
 	}
 }
