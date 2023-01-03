@@ -3,10 +3,10 @@
 	<PropertyGroup>
 		<OutputType>library</OutputType>
 		<PackageId>Kingloo.FileLogger</PackageId>
-		<PackageVersion>1.11.1</PackageVersion>
+		<PackageVersion>2.0.0</PackageVersion>
 		<Authors>Kingloo</Authors>
 		<Description>A flat-file logger.</Description>
-		<Copyright>© Kingloo 2022</Copyright>
+		<Copyright>© Kingloo 2023</Copyright>
 		<RepositoryUrl>https://github.com/Kingloo/FileLogger/</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
 		<Tags>file,logger,logging</Tags>
