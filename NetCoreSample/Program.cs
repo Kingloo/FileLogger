@@ -14,10 +14,7 @@ namespace NetCoreSample
 		{
 			string env = Environment.GetEnvironmentVariable("Environment") ?? "Production";
 
-			IFileLoggerSink sink = new FileLoggerSink();
-
 			IServiceProvider serviceProvider = new ServiceCollection()
-				.AddSingleton(sink)
 				.AddLogging(logging =>
 				{
 					logging.SetMinimumLevel(LogLevel.Debug);
@@ -29,20 +26,19 @@ namespace NetCoreSample
 						simpleConsoleOptions.SingleLine = true;
 					});
 
-					logging.AddFileLogger(options =>
+					logging.AddFileLogger((FileLoggerOptions options) =>
 					{
-						options.Path = @".\test.txt";
+						options.Path = "C:\\Users\\k1ngl\\source\\FileLogger\\test.txt";
 						options.IncludeProviderMessages = true;
 					});
 				})
+				.AddSingleton<IFileLoggerSink, FileLoggerSink>()
 				.AddTransient<MyService>()
 				.BuildServiceProvider();
 
-			FileLoggerOptions fileLoggerOptions = serviceProvider.GetRequiredService<IOptions<FileLoggerOptions>>().Value;
-
 			IFileLoggerSink fileLogSink = serviceProvider.GetRequiredService<IFileLoggerSink>();
 
-			fileLogSink.StartSink(fileLoggerOptions);
+			fileLogSink.StartSink();
 
 			ILogger<Program> programLogger = serviceProvider.GetRequiredService<ILoggerFactory>().CreateLogger<Program>();
 
@@ -73,7 +69,7 @@ namespace NetCoreSample
 
 			programLogger.LogInformation("ended");
 
-			await sink.DisposeAsync().ConfigureAwait(false);
+			await fileLogSink.DisposeAsync();
 
 			return 0;
 		}

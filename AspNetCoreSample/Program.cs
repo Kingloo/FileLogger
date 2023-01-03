@@ -2,19 +2,18 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using FileLogger;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using FileLogger;
 
 namespace AspNetCoreSample
 {
 	public class Program
 	{
-		private static readonly IFileLoggerSink sink = new FileLoggerSink();
 		private static readonly CancellationTokenSource cts = new CancellationTokenSource();
 
 		public Program()
@@ -41,8 +40,6 @@ namespace AspNetCoreSample
 			}
 			finally
 			{
-				await sink.DisposeAsync();
-
 				cts.Dispose();
 			}
 
@@ -62,11 +59,10 @@ namespace AspNetCoreSample
 
 		private static void ConfigureHostConfiguration(IConfigurationBuilder configurationBuilder)
 		{
-			configurationBuilder.AddCommandLine(Environment.GetCommandLineArgs());
-
-			configurationBuilder.AddEnvironmentVariables();
-
-			configurationBuilder.SetBasePath(RuntimeCircumstance.GetRealLocation());
+			configurationBuilder
+				.AddCommandLine(Environment.GetCommandLineArgs())
+				.AddEnvironmentVariables()
+				.SetBasePath(RuntimeCircumstance.GetRealLocation());
 		}
 
 		private static void ConfigureAppConfiguration(HostBuilderContext ctx, IConfigurationBuilder configurationBuilder)
@@ -96,11 +92,6 @@ namespace AspNetCoreSample
 			}
 		}
 
-		private static void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
-		{
-			services.AddSingleton(sink);
-		}
-
 		private static void ConfigureLogging(HostBuilderContext ctx, ILoggingBuilder loggingBuilder)
 		{
 			loggingBuilder.AddConfiguration(ctx.Configuration.GetSection("Logging"));
@@ -112,6 +103,13 @@ namespace AspNetCoreSample
 			});
 
 			loggingBuilder.AddFileLogger();
+		}
+
+		private static void ConfigureServices(HostBuilderContext ctx, IServiceCollection services)
+		{
+			services.AddSingleton<IFileLoggerSink, FileLoggerSink>();
+
+			services.Configure<FileLoggerOptions>(ctx.Configuration.GetSection("FileLogger"));
 		}
 
 		private static void ConfigureWebHost(IWebHostBuilder webHostBuilder)
