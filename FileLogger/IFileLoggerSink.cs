@@ -7,7 +7,7 @@ namespace FileLogger
 {
 	public interface IFileLoggerSink : IAsyncDisposable
 	{
-		void StartSink(FileLoggerOptions options);
+		void StartSink();
 		void StopSink();
 		void Pour(LogLevel logLevel, EventId eventId, string categoryName, string message);
 		ValueTask DrainAsync();

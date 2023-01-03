@@ -7,6 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using static FileLogger.FileLoggerHelpers;
 
 namespace FileLogger
@@ -16,29 +17,20 @@ namespace FileLogger
 		private readonly ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
 		private System.Timers.Timer? queueTimer;
 
-		private FileLoggerOptions options = new FileLoggerOptions();
+		private readonly IOptionsMonitor<FileLoggerOptions> optionsMonitor;
 
-		public FileLoggerSink() { }
-
-		public FileLoggerSink(FileLoggerOptions options)
+		public FileLoggerSink(IOptionsMonitor<FileLoggerOptions> options)
 		{
 			if (options is null)
 			{
 				throw new ArgumentNullException(nameof(options));
 			}
 
-			this.options = options;
+			optionsMonitor = options;
 		}
 
-		public void StartSink(FileLoggerOptions options)
+		public void StartSink()
 		{
-			if (options is null)
-			{
-				throw new ArgumentNullException(nameof(options));
-			}
-
-			this.options = options;
-
 			StartDrainTimer();
 		}
 
@@ -46,7 +38,7 @@ namespace FileLogger
 		{
 			if (queueTimer is null)
 			{
-				queueTimer = new System.Timers.Timer(options.DrainIntervalMs);
+				queueTimer = new System.Timers.Timer(optionsMonitor.CurrentValue.DrainIntervalMs);
 				queueTimer.Elapsed += QueueTimer_Elapsed;
 				queueTimer.Start();
 			}
@@ -85,7 +77,7 @@ namespace FileLogger
 				throw new ArgumentNullException(nameof(message), $"your {nameof(message)} was null-or-whitespace");
 			}
 
-			string formattedMessage = FormatMessage(logLevel, eventId.Id, categoryName, message, options);
+			string formattedMessage = FormatMessage(logLevel, eventId.Id, categoryName, message, optionsMonitor.CurrentValue);
 
 			queue.Enqueue(formattedMessage);
 		}
@@ -112,7 +104,7 @@ namespace FileLogger
 
 			string drainMessage = CreateDrainMessage(messages, eventId, wasCalledFromDispose: wasCalledFromDispose);
 
-			await WriteToFileAsync(drainMessage, options, cancellationToken).ConfigureAwait(false);
+			await WriteToFileAsync(drainMessage, optionsMonitor.CurrentValue, cancellationToken).ConfigureAwait(false);
 
 			if (wasCalledFromDispose)
 			{
@@ -133,7 +125,7 @@ namespace FileLogger
 
 			int maxMessagesToDrainThisRun = drainEntireQueue
 				? Int32.MaxValue
-				: options.DrainCount;
+				: optionsMonitor.CurrentValue.DrainCount;
 
 			while (drainedCount < maxMessagesToDrainThisRun
 				&& queue.TryDequeue(out string? message))
@@ -155,9 +147,9 @@ namespace FileLogger
 				sb.AppendLine(message);
 			}
 
-			if (options.IncludeProviderMessages)
+			if (optionsMonitor.CurrentValue.IncludeProviderMessages)
 			{
-				string sinkLogMessage = FormatSinkMessage(LogLevel.Information, eventId, options, messages.Count, wasCalledFromDispose);
+				string sinkLogMessage = FormatSinkMessage(LogLevel.Information, eventId, optionsMonitor.CurrentValue, messages.Count, wasCalledFromDispose);
 
 				sb.AppendLine(sinkLogMessage);
 			}
