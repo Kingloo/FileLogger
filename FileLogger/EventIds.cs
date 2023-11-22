@@ -11,10 +11,8 @@ namespace FileLogger
 
 		public static bool ShouldLogFileLoggerEventId(IList<int> eventIds, int eventId)
 		{
-			if (eventIds is null)
-			{
-				throw new ArgumentNullException(nameof(eventIds));
-			}
+			ArgumentNullException.ThrowIfNull(eventIds);
+			ArgumentOutOfRangeException.ThrowIfLessThan<int>(eventId, 0);
 
 			if (eventIds.Count == 0)
 			{

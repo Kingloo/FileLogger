@@ -11,27 +11,16 @@ namespace FileLogger
 
 		public FileLogger(string categoryName, IFileLoggerSink sink, Func<FileLoggerOptions> getCurrentOptions)
 		{
-			if (String.IsNullOrWhiteSpace(categoryName))
-			{
-				throw new ArgumentNullException(nameof(categoryName));
-			}
-
-			if (sink is null)
-			{
-				throw new ArgumentNullException(nameof(sink));
-			}
-
-			if (getCurrentOptions is null)
-			{
-				throw new ArgumentNullException(nameof(getCurrentOptions));
-			}
+			ArgumentNullException.ThrowIfNull(categoryName);
+			ArgumentNullException.ThrowIfNull(sink);
+			ArgumentNullException.ThrowIfNull(getCurrentOptions);
 
 			this.categoryName = categoryName;
 			this.sink = sink;
 			this.getCurrentOptions = getCurrentOptions;
 		}
 
-		public IDisposable BeginScope<TState>(TState state) => default!;
+		public IDisposable? BeginScope<TState>(TState state) where TState : notnull => default;
 
 		public bool IsEnabled(LogLevel logLevel)
 		{
@@ -45,15 +34,8 @@ namespace FileLogger
 				return;
 			}
 
-			if (state is null)
-			{
-				throw new ArgumentNullException(nameof(state));
-			}
-
-			if (formatter is null)
-			{
-				throw new ArgumentNullException(nameof(formatter));
-			}
+			ArgumentNullException.ThrowIfNull(state);
+			ArgumentNullException.ThrowIfNull(formatter);
 
 			sink.Pour(logLevel, eventId, categoryName, formatter(state, exception));
 		}

@@ -21,10 +21,7 @@ namespace FileLogger
 
 		public FileLoggerSink(IOptionsMonitor<FileLoggerOptions> options)
 		{
-			if (options is null)
-			{
-				throw new ArgumentNullException(nameof(options));
-			}
+			ArgumentNullException.ThrowIfNull(options);
 
 			optionsMonitor = options;
 		}
@@ -121,7 +118,7 @@ namespace FileLogger
 
 			uint drainedCount = 0;
 
-			IList<string> messages = new List<string>();
+			List<string> messages = new List<string>();
 
 			int maxMessagesToDrainThisRun = drainEntireQueue
 				? Int32.MaxValue
@@ -180,7 +177,7 @@ namespace FileLogger
 // analysis mode->all asserts that the following 'is not null' check will always be true
 // but without that check you get yellow squigglies under first fsAsync warning that it might be null
 # pragma warning disable CA1508
-				if (fsAsync is not null)
+				if (fsAsync != null)
 				{
 					await fsAsync.DisposeAsync().ConfigureAwait(false);
 				}

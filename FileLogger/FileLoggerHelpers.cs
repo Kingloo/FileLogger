@@ -11,20 +11,10 @@ namespace FileLogger
 	{
 		internal static string FormatMessage(LogLevel logLevel, int eventId, string categoryName, string message, FileLoggerOptions options)
 		{
-			if (String.IsNullOrWhiteSpace(categoryName))
-			{
-				throw new ArgumentNullException(nameof(categoryName), $"your {nameof(categoryName)} was null-or-whitespace");
-			}
-
-			if (String.IsNullOrWhiteSpace(message))
-			{
-				throw new ArgumentNullException(nameof(message), $"your {nameof(message)} was null-or-whitespace");
-			}
-
-			if (options is null)
-			{
-				throw new ArgumentNullException(nameof(options));
-			}
+			ArgumentOutOfRangeException.ThrowIfLessThan<int>(eventId, 0);
+			ArgumentNullException.ThrowIfNull(categoryName);
+			ArgumentNullException.ThrowIfNull(message);
+			ArgumentNullException.ThrowIfNull(options);
 
 			StringBuilder sb = new StringBuilder();
 
@@ -87,14 +77,11 @@ namespace FileLogger
 
 		private static string GetProgramName(Assembly? assembly)
 		{
-			if (assembly is null)
-			{
-				throw new ArgumentNullException(nameof(assembly), "assembly was null");
-			}
+			ArgumentNullException.ThrowIfNull(assembly);
 
 			if (String.IsNullOrWhiteSpace(assembly.FullName))
 			{
-				throw new ArgumentNullException(nameof(assembly.FullName), $"assembly's {nameof(assembly.FullName)} was null-or-whitespace");
+				return "unknown-program";
 			}
 
 			int commaIndex = assembly.FullName.IndexOf(',', StringComparison.Ordinal);

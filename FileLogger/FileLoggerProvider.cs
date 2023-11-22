@@ -23,20 +23,15 @@ namespace FileLogger
 			: this(monitoredOptions.CurrentValue, sink)
 #pragma warning restore CA1062
 		{
-			if (monitoredOptions is null)
-			{
-				throw new ArgumentNullException(nameof(monitoredOptions));
-			}
+			ArgumentNullException.ThrowIfNull(monitoredOptions);
 
 			optionsChangeToken = monitoredOptions.OnChange(OnOptionsChanged);
 		}
 
 		public FileLoggerProvider(FileLoggerOptions options, IFileLoggerSink sink)
 		{
-			if (options is null)
-			{
-				throw new ArgumentNullException(nameof(options));
-			}
+			ArgumentNullException.ThrowIfNull(options);
+			ArgumentNullException.ThrowIfNull(sink);
 
 			this.options = options;
 			this.sink = sink;

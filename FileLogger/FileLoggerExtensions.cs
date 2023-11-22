@@ -11,10 +11,7 @@ namespace FileLogger
 	{
 		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder builder)
 		{
-			if (builder is null)
-			{
-				throw new ArgumentNullException(nameof(builder));
-			}
+			ArgumentNullException.ThrowIfNull(builder);
 
 			builder.AddConfiguration();
 
@@ -27,10 +24,8 @@ namespace FileLogger
 
 		public static ILoggingBuilder AddFileLogger(this ILoggingBuilder builder, Action<FileLoggerOptions> configure)
 		{
-			if (builder is null)
-			{
-				throw new ArgumentNullException(nameof(builder));
-			}
+			ArgumentNullException.ThrowIfNull(builder);
+			ArgumentNullException.ThrowIfNull(configure);
 
 			builder.AddFileLogger();
 
