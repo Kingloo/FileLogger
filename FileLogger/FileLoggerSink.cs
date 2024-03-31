@@ -116,14 +116,14 @@ namespace FileLogger
 				return Array.Empty<string>();
 			}
 
-			uint drainedCount = 0;
-
-			List<string> messages = new List<string>();
+			int drainedCount = 0;
 
 			int maxMessagesToDrainThisRun = drainEntireQueue
 				? Int32.MaxValue
 				: optionsMonitor.CurrentValue.DrainCount;
 
+			List<string> messages = new List<string>(capacity: drainEntireQueue ? queue.Count : maxMessagesToDrainThisRun);
+			
 			while (drainedCount < maxMessagesToDrainThisRun
 				&& queue.TryDequeue(out string? message))
 			{
