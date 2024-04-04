@@ -119,7 +119,7 @@ namespace FileLogger
 			int drainedCount = 0;
 
 			int maxMessagesToDrainThisRun = drainEntireQueue
-				? Int32.MaxValue
+				? 10_000 // arbitrary, max possible value is Array.MaxLength - !! NEVER set to Int32.MaxValue
 				: optionsMonitor.CurrentValue.DrainCount;
 
 			List<string> messages = new List<string>(capacity: drainEntireQueue ? queue.Count : maxMessagesToDrainThisRun);
